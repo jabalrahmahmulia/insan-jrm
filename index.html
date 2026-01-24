@@ -1,45 +1,811 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Portal INSAN JRM</title>
-  <link rel="icon" href="https://upload.wikimedia.org/wikipedia/commons/9/98/Kota_Bengkulu.png" />
-  <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #eee;
-      overflow: hidden; /* Mencegah scroll ganda */
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base target="_top">
+    <title>Portal Pegawai JRM</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-material-ui/material-ui.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #4f46e5; --primary-dark: #4338ca; --accent: #8b5cf6;
+            --bg-grad-1: #f3f4f6; --bg-grad-2: #e0e7ff;
+            --text-dark: #1e293b; --text-light: #64748b;
+            --radius: 16px; --shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
+            min-height: 100vh; margin: 0; padding: 20px; color: var(--text-dark);
+        }
+        .container { max-width: 850px; margin: 0 auto; padding-bottom: 40px; }
+        
+        /* HEADER */
+        .header-branding { text-align: center; margin-bottom: 30px; animation: fadeInDown 0.8s ease; }
+        .header-branding img { height: 70px; margin-bottom: 15px; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.1)); }
+        .header-branding h2 {
+            font-weight: 700; font-size: 1.8rem; margin: 0;
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            color: transparent;
+        }
 
-    .iframe-container {
-      width: 100%;
-      height: 100dvh; /* Menggunakan dvh agar pas di mobile browser */
-      overflow: hidden;
-    }
+        /* CARDS */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            border-radius: var(--radius); padding: 2rem; box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 255, 255, 0.5); margin-bottom: 25px;
+            animation: fadeInUp 0.6s ease backwards;
+        }
 
-    iframe {
-      display: block;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-  </style>
+        /* FORM */
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { display: flex; flex-direction: column; gap: 8px; }
+        label { font-size: 0.9rem; font-weight: 600; margin-bottom: 6px; }
+        input, select { padding: 12px 15px; border: 2px solid #e2e8f0; border-radius: 10px; width: 100%; box-sizing: border-box; font-family:inherit; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; }
+        input[readonly] { background-color: #f1f5f9; cursor: default; }
+        
+        /* UTILS */
+        .hidden { display: none !important; }
+
+        /* ACCORDION */
+        .accordion-header {
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none; -webkit-user-select: none; -moz-user-select: none; 
+        }
+        .accordion-content {
+            display: none; /* Hidden by default */
+            padding-top: 20px;
+            margin-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+        .accordion-card.open .accordion-content {
+            display: block;
+        }
+        .accordion-card.open .accordion-icon {
+            transform: rotate(45deg);
+        }
+        .accordion-icon {
+            transition: transform 0.3s ease;
+            font-style: normal;
+            font-weight: bold;
+        }
+
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            /* Hide original tabs and show mobile dropdown */
+            .tabs {
+                display: none;
+            }
+            .mobile-tabs-container {
+                display: block;
+            }
+            /* Force form grid into a single column */
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .glass-card {
+                padding: 1.5rem;
+            }
+            .header-branding h2 {
+                font-size: 1.6rem;
+            }
+            .contract-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            .btn-download, .btn-disabled {
+                width: 100%;
+                box-sizing: border-box;
+                justify-content: center;
+            }
+            .flex-row-group { 
+                display: block;
+            }
+            .flex-row-group .form-group {
+                margin-bottom: 20px;
+            }
+            .flex-row-group .form-group:last-child {
+                margin-bottom: 0;
+            }
+            #nik-search {
+                font-size: 1rem;
+                letter-spacing: 0;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            .glass-card {
+                padding: 1rem;
+            }
+            .header-branding img {
+                height: 50px;
+            }
+            .header-branding h2 {
+                font-size: 1.4rem;
+            }
+            .c-info h5 {
+                font-size: 0.9rem;
+            }
+            .c-info p {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* BUTTONS */
+        .btn {
+            width: 100%; padding: 14px; border: none; border-radius: 12px;
+            font-weight: 700; font-size: 1rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: 0.3s;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--accent)); color: white; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); }
+        .btn-primary:hover { filter: brightness(110%); transform: translateY(-2px); }
+        .btn-secondary { background: #e2e8f0; color: var(--text-dark); }
+
+        /* TABS */
+        .tabs { display: flex; background: #e0e7ff; padding: 5px; border-radius: 14px; margin-bottom: 25px; overflow-x: auto; }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; color: var(--text-light); font-weight: 600; border-radius: 10px; cursor: pointer; transition: 0.3s; white-space: nowrap; }
+        .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+
+        /* CONTRACT LIST STYLE */
+        .contract-item {
+            display: flex; align-items: center; justify-content: space-between;
+            background: #f8fafc; border: 1px solid #e2e8f0;
+            padding: 15px 20px; border-radius: 12px; margin-bottom: 15px;
+            transition: 0.2s;
+        }
+        .contract-item:hover { border-color: var(--primary); background: #fff; transform: translateX(5px); }
+        .c-left { display: flex; align-items: center; gap: 15px; }
+        .c-icon {
+            width: 45px; height: 45px; background: #e0e7ff; color: var(--primary);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+        }
+        .c-info h5 { margin: 0 0 5px 0; font-size: 1rem; color: var(--text-dark); }
+        .c-info p { margin: 0; font-size: 0.85rem; color: var(--text-light); }
+        .btn-download {
+            background: var(--white); border: 2px solid #e2e8f0; color: var(--text-dark);
+            padding: 8px 15px; border-radius: 8px; text-decoration: none; font-size: 0.9rem; font-weight: 600;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-download:hover { border-color: var(--primary); color: var(--primary); }
+
+        .btn-disabled {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            color: #94a3b8;
+            cursor: not-allowed;
+            padding: 8px 15px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* PROBATION & SOON BOX */
+        .probation-box { text-align: center; padding: 40px 20px; background: #fff7ed; border: 1px solid #fed7aa; color: #c2410c; border-radius: var(--radius); }
+        .soon-box { text-align: center; padding: 60px 20px; }
+        .soon-icon { font-size: 4rem; color: #cbd5e1; margin-bottom: 20px; }
+        
+        /* ANIMATIONS */
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* BANK & FILES */
+        .bank-field { background: #f0fdf4 !important; border-color: #bbf7d0 !important; }
+        .current-file-link { display: inline-block; margin-top: 5px; font-size: 0.85rem; color: var(--primary); text-decoration: none; }
+        .check-icon { color: #22c55e; margin-left: 8px; }
+
+        /* MOBILE TABS */
+        .mobile-tabs-container { display: none; } /* Hidden on desktop */
+        #mobile-tabs-select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid rgba(255, 255, 255, 0.9);
+            border-radius: var(--radius);
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--primary);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%234f46e5' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 1rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+        }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+            border-top: 1px solid #e2e8f0;
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
-  <div class="iframe-container">
-    <iframe
-      id="app"
-      src="https://script.google.com/macros/s/AKfycbw3XQx9x5teCcoNwcTf4e5pM0nIy22c2ldT28y8Ft4FHUTG6dycSuJqV4Td7BxsNkM5/exec"
-      scrolling="yes"
-      allowfullscreen="true"
-      webkitallowfullscreen="true"
-      mozallowfullscreen="true"
-      allow="fullscreen; camera; microphone; display-capture; geolocation;">
-    </iframe>
-  </div>
+
+    <div class="container">
+        <header class="header-branding">
+            <img src="https://jrm.sch.id/wp-content/uploads/2025/03/cropped-cropped-header-web-jrm-1.png" alt="Logo JRM">
+            <h2>Insan JRM Portal</h2>
+            <p style="color: var(--text-light); margin-top:5px;">Data Pegawai & Kas Sosial Insan JRM</p>
+        </header>
+
+        <div class="glass-card search-card-container" id="search-card">
+            <h3 style="margin-top:0; display:flex; align-items:center; gap:10px;">
+                <i class="fa-solid fa-lock" style="color:var(--primary);"></i> Akses Sistem
+            </h3>
+            <p style="margin-bottom:20px; color:var(--text-light);">Input NIK Anda untuk masuk.</p>
+            <div class="form-group">
+                <input type="number" id="nik-search" placeholder="16 Digit NIK..." style="text-align:center; font-size:1.2rem; letter-spacing:1px;">
+            </div>
+            <button class="btn btn-primary" style="margin-top:20px;" onclick="cariData()">
+                <i class="fa-solid fa-arrow-right-to-bracket"></i> Masuk
+            </button>
+        </div>
+
+        <div id="probation-view" class="glass-card hidden">
+            <div class="probation-box">
+                <i class="fa-solid fa-user-clock" style="font-size:3rem; margin-bottom:15px; color:#f97316;"></i>
+                <h2 id="prob-name">Halo, User!</h2>
+                <p style="font-size:1.1rem; margin:10px 0;">Status Kepegawaian: <strong>PROBATION</strong></p>
+                <hr style="border:0; border-top:1px solid rgba(0,0,0,0.1); margin:20px 0;">
+                <p>Anda berhasil masuk. Akses ubah data dan kas sosial belum tersedia untuk status Probation.</p>
+                <button class="btn btn-secondary" onclick="location.reload()" style="max-width:200px; margin:20px auto 0;">Keluar</button>
+            </div>
+        </div>
+
+        <div id="main-area" class="hidden">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('pegawai')"><i class="fa-solid fa-user-pen"></i> Data Pegawai</button>
+                <button class="tab-btn" onclick="switchTab('kontrak')"><i class="fa-solid fa-file-signature"></i> Kontrak Kerja</button>
+                <button class="tab-btn" onclick="switchTab('sosial')"><i class="fa-solid fa-hand-holding-heart"></i> Kas Sosial</button>
+                <button class="tab-btn" onclick="switchTab('report')"><i class="fa-solid fa-chart-line"></i> Report Kinerja</button>
+            </div>
+
+            <div class="mobile-tabs-container">
+                <select id="mobile-tabs-select" onchange="switchTab(this.value)">
+                    <option value="pegawai">Data Pegawai</option>
+                    <option value="kontrak">Kontrak Kerja</option>
+                    <option value="sosial">Kas Sosial</option>
+                    <option value="report">Report Kinerja</option>
+                </select>
+            </div>
+
+            <div id="tab-pegawai">
+                <form id="form-pegawai" onsubmit="handleUpdate(event)">
+                    <input type="hidden" id="row-number">
+                    
+                    <div class="glass-card accordion-card open">
+                        <div class="accordion-header">
+                            <h4 style="margin-top:0; color:var(--primary);"><i class="fa-solid fa-id-card"></i> Identitas Pribadi</h4>
+                            <span class="accordion-icon">+</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="form-grid">
+                                <div class="form-group"><label>NIK</label><input type="text" id="NIK" readonly></div>
+                                <div class="form-group hidden"><label>NIP</label><input type="text" id="NIP"></div>
+                                
+                                <div class="form-group" style="flex: 3;">
+                                    <label>Nama Lengkap</label><input type="text" id="Nama">
+                                </div>
+                                <div class="form-group" style="flex: 1;">
+                                    <label>Gelar Akademik</label><input type="text" id="GelarAkademik" placeholder="S.Pd">
+                                </div>
+                                
+                                <div class="form-group"><label>Tempat Lahir</label><input type="text" id="TempatLahir"></div>
+                                <div class="form-group"><label>Tanggal Lahir</label><input type="date" id="TanggalLahir"></div>
+                                <div class="form-group"><label>Jenis Kelamin</label><select id="JenisKelamin"><option value="">Pilih...</option><option value="Laki-Laki">Laki-Laki</option><option value="Perempuan">Perempuan</option></select></div>
+                                <div class="form-group"><label>Status Pernikahan</label><select id="StatusPernikahan"><option value="">Pilih...</option><option value="Lajang">Lajang</option><option value="Menikah">Menikah</option><option value="Cerai Hidup">Cerai Hidup</option><option value="Cerai Mati">Cerai Mati</option></select></div>
+                                <div class="form-group"><label>Alamat Domisili</label><input type="text" id="Alamat"></div>
+                                <div class="form-group"><label>Email</label><input type="email" id="Email"></div>
+                                <div class="form-group"><label>WhatsApp</label><input type="number" id="WhatsApp"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card accordion-card open">
+                         <div class="accordion-header">
+                            <h4 style="margin-top:0; color:var(--primary);"><i class="fa-solid fa-briefcase"></i> Pekerjaan & Keuangan</h4>
+                            <span class="accordion-icon">+</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="form-grid">
+                                <div class="form-group"><label>Unit Kerja</label><select id="Unit"><option value="TK">TK</option><option value="SD">SD</option><option value="SMP">SMP</option><option value="SMA">SMA</option><option value="JRM University">JRM University</option></select></div>
+                                <div class="form-group">
+                                    <label>Lokasi Kerja</label>
+                                    <select id="LokasiKerja">
+                                        <option value="Sunggal">Sunggal</option>
+                                        <option value="Ringroad">Ringroad</option>
+                                        <option value="Selambo">Selambo Asrama Putra</option>
+                                        <option value="Selambo">Selambo Asrama Putri</option>
+                                        <option value="Marelan">Marelan</option>
+                                    </select>
+                                </div>
+                                <div class="form-group"><label>Jabatan</label><input type="text" id="Jabatan"></div>
+                                
+                                <div class="form-group">
+                                    <label>Tanggal Masuk JRM</label>
+                                    <input type="date" id="masukJRM">
+                                    <small style="color: #64748b; font-size: 0.75rem; margin-top: 4px; line-height: 1.3;">
+                                        *Jika pernah keluar dan masuk kembali, input tanggal terbaru setelah resign.
+                                    </small>
+                                </div>
+                                
+                                <div class="form-group"><label>Status Kepegawaian</label><input type="text" id="Status Kepegawaian" readonly style="font-weight:bold; color:var(--primary);"></div>
+                                
+                                <div class="form-group">
+                                    <label style="color:#15803d;"><i class="fa-solid fa-building-columns"></i> Rekening Bank Mandiri</label>
+                                    <input type="number" id="RekeningBankMandiri" class="bank-field" placeholder="Nomor Rekening Anda">
+                                </div>
+                                
+                                
+                                    <div class="form-group">
+                                        <label>BPJS Kesehatan</label>
+                                        <input type="text" id="BPJSKes" placeholder="Nomor BPJS Kesehatan">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>BPJS Ketenagakerjaan</label>
+                                        <input type="text" id="BPJSTk" placeholder="Nomor BPJS Ketenagakerjaan">
+                                    </div>
+                                
+                                
+                                <input type="hidden" id="NoKontrak25-26">
+                                <input type="hidden" id="LinkKontrak25-26">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card accordion-card open">
+                         <div class="accordion-header">
+                            <h4 style="margin-top:0; color:var(--primary);"><i class="fa-solid fa-file-contract"></i> Data Lainnya</h4>
+                            <span class="accordion-icon">+</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="form-grid">
+                                <div class="form-group"><label>Pendidikan Terakhir</label><select id="PendidikanTerakhir"><option value="SMA">SMA</option><option value="D3">D3</option><option value="S1">S1</option><option value="S2">S2</option></select></div>
+                                <div class="form-group"><label>Nama Kampus/Sekolah</label><input type="text" id="NamaSekolahKampus"></div>
+                                <div class="form-group"><label>Tahun Tamat</label><input type="number" id="TahunTamat"></div>
+                                <div class="form-group"><label>Nama Kontak Darurat</label><input type="text" id="NamaKontakDarurat"></div>
+                                <div class="form-group"><label>No. WA Darurat</label><input type="number" id="WAkontakdarurat"></div>
+                                <div class="form-group">
+                                    <label>Hubungan</label>
+                                    <select id="Statuskontakdarurat_select" onchange="checkDarurat(this)">
+                                        <option value="">Pilih...</option><option value="Suami">Suami</option><option value="Istri">Istri</option><option value="Orang Tua">Orang Tua</option><option value="Anak">Anak</option><option value="lainnya">Lainnya</option>
+                                    </select>
+                                    <input type="text" id="Statuskontakdarurat_text" class="hidden" style="margin-top:5px;" placeholder="Sebutkan...">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <h4 style="margin-top:0; color:var(--primary);"><i class="fa-solid fa-cloud-arrow-up"></i> Dokumen Digital</h4>
+                        <div class="form-grid">
+                            <div class="form-group"><label>Foto Diri<span id="check-UploadFoto" class="check-icon hidden"><i class="fa-solid fa-circle-check"></i></span></label><input type="file" id="file-foto"><a href="#" id="link-UploadFoto" class="current-file-link hidden" target="_blank">Lihat File</a></div>
+                            <div class="form-group"><label>KTP<span id="check-UploadKTP" class="check-icon hidden"><i class="fa-solid fa-circle-check"></i></span></label><input type="file" id="file-ktp"><a href="#" id="link-UploadKTP" class="current-file-link hidden" target="_blank">Lihat File</a></div>
+                            <div class="form-group"><label>KK<span id="check-UploadKK" class="check-icon hidden"><i class="fa-solid fa-circle-check"></i></span></label><input type="file" id="file-kk"><a href="#" id="link-UploadKK" class="current-file-link hidden" target="_blank">Lihat File</a></div>
+                            <div class="form-group"><label>Ijazah Terakhir<span id="check-UploadIjazah" class="check-icon hidden"><i class="fa-solid fa-circle-check"></i></span></label><input type="file" id="file-ijazah"><a href="#" id="link-UploadIjazah" class="current-file-link hidden" target="_blank">Lihat File</a></div>
+                            <div class="form-group"><label>CV Terbaru<span id="check-uploadCV" class="check-icon hidden"><i class="fa-solid fa-circle-check"></i></span></label><input type="file" id="file-cv"><a href="#" id="link-uploadCV" class="current-file-link hidden" target="_blank">Lihat File</a></div>
+                            <div class="form-group"><label>Sertifikat<span id="check-Sertifikat" class="check-icon hidden"><i class="fa-solid fa-circle-check"></i></span></label><input type="file" id="file-sertifikat"><a href="#" id="link-Sertifikat" class="current-file-link hidden" target="_blank">Lihat File</a></div>
+                        </div>
+                        <input type="hidden" id="UploadKTP_lama"><input type="hidden" id="UploadKK_lama"><input type="hidden" id="UploadFoto_lama"><input type="hidden" id="uploadCV_lama"><input type="hidden" id="UploadIjazah_lama"><input type="hidden" id="Sertifikat_lama">
+                    </div>
+
+                    <div class="glass-card">
+                        <h4 style="margin-top:0; color:var(--primary);"><i class="fa-solid fa-key"></i> Ubah PIN</h4>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>PIN Lama</label>
+                                <input type="password" id="old-pin" placeholder="Masukkan PIN lama Anda">
+                            </div>
+                            <div class="form-group">
+                                <label>PIN Baru</label>
+                                <input type="password" id="new-pin" placeholder="Masukkan PIN baru">
+                            </div>
+                            <div class="form-group">
+                                <label>Konfirmasi PIN Baru</label>
+                                <input type="password" id="confirm-new-pin" placeholder="Konfirmasi PIN baru">
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-secondary" style="margin-top:20px;" onclick="handleChangePin()">
+                            <i class="fa-solid fa-save"></i> Ubah PIN
+                        </button>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan</button>
+                </form>
+            </div>
+
+            <div id="tab-kontrak" class="hidden">
+                <div class="glass-card">
+                    <h4 style="margin-top:0; color:var(--primary);"><i class="fa-solid fa-file-signature"></i> Daftar Kontrak Kerja</h4>
+                    <p style="color:var(--text-light); margin-bottom:20px;">Berikut adalah riwayat kontrak kerja Anda di JRM.</p>
+                    <div id="contract-list-container">
+                        <!-- Contract list will be dynamically loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-sosial" class="hidden">
+                <div class="glass-card soon-box">
+                    <i class="fa-solid fa-hourglass-half soon-icon"></i>
+                    <h3>Fitur Segera Hadir</h3>
+                    <p style="color: var(--text-light);">Modul Kas Sosial sedang dalam tahap pengembangan.<br>Nantikan update selanjutnya.</p>
+                    <input type="hidden" id="kas-nama"><input type="hidden" id="kas-nik">
+                </div>
+            </div>
+
+            <div id="tab-report" class="hidden">
+                <div class="glass-card soon-box">
+                    <i class="fa-solid fa-chart-simple soon-icon"></i>
+                    <h3>Fitur Segera Hadir</h3>
+                    <p style="color: var(--text-light);">Modul Report Kinerja sedang dalam tahap pengembangan.<br>Nantikan update selanjutnya.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="footer">
+            <p>JRM University &copy; <span id="copyright-year"></span> All Rights Reserved.</p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const textFields = ["NIK", "NIP", "Nama", "GelarAkademik", "JenisKelamin", "Email", "WhatsApp", "Jabatan", "Unit", "LokasiKerja", "Alamat", "TempatLahir", "TanggalLahir", "StatusPernikahan", "PendidikanTerakhir", "NamaSekolahKampus", "TahunTamat", "BPJSKes", "BPJSTk", "masukJRM", "RekeningBankMandiri", "NamaKontakDarurat", "WAkontakdarurat", "Status Kepegawaian", "NoKontrak25-26", "LinkKontrak25-26"];
+        const fileFields = [{id:'file-ktp', h:'UploadKTP'}, {id:'file-kk', h:'UploadKK'}, {id:'file-foto', h:'UploadFoto'}, {id:'file-cv', h:'uploadCV'}, {id:'file-ijazah', h:'UploadIjazah'}, {id:'file-sertifikat', h:'Sertifikat'}];
+
+        function cariData() {
+            const nik = document.getElementById('nik-search').value;
+            if (!nik) {
+                Swal.fire('Info', 'Masukkan NIK terlebih dahulu', 'info');
+                return;
+            }
+
+            Swal.fire({
+                title: 'Masukkan PIN Anda',
+                input: 'password',
+                inputAttributes: {
+                    autocapitalize: 'off',
+                    autocorrect: 'off'
+                },
+                showCancelButton: true,
+                confirmButtonText: 'Login',
+                showLoaderOnConfirm: true,
+                preConfirm: (pin) => {
+                    return pin; // Just return the pin
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const pin = result.value;
+                    Swal.fire({
+                        title: 'Memverifikasi...',
+                        didOpen: () => {
+                            Swal.showLoading();
+                        },
+                        allowOutsideClick: false
+                    });
+
+                    google.script.run
+                        .withSuccessHandler(serverResponse => {
+                            if (serverResponse && serverResponse.status === 'success') {
+                                onSearchSuccess(serverResponse);
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Login Gagal',
+                                    text: serverResponse.message || 'Terjadi kesalahan yang tidak diketahui dari server.'
+                                });
+                            }
+                        })
+                        .withFailureHandler(error => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error Kritis',
+                                text: 'Gagal menghubungi server. Pesan: ' + error.message
+                            });
+                        })
+                        .checkPIN(nik, pin);
+                }
+            });
+        }
+
+        function onSearchSuccess(res) {
+            // No need to check for status here anymore, it's guaranteed to be 'success'.
+            console.log("Success response from server:", res); 
+            Swal.close(); // Close any previous popups
+
+            const searchCard = document.getElementById('search-card');
+            if (searchCard) {
+                searchCard.classList.add('hidden');
+            }
+
+            // PROBATION
+            if (res.isProbation) {
+                document.getElementById('probation-view').classList.remove('hidden');
+                document.getElementById('prob-name').innerText = "Halo, " + res.data.Nama;
+                return;
+            }
+
+            // AKTIF
+            document.getElementById('main-area').classList.remove('hidden');
+            const data = res.data;
+            document.getElementById('row-number').value = res.row;
+
+            // 1. Handle all text fields
+            textFields.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.value = data[id] || ''; 
+                }
+            });
+
+            // 2. Handle file fields with robust display logic
+            fileFields.forEach(f => {
+                const url = data[f.h];
+                const link = document.getElementById(`link-${f.h}`);
+                const check = document.getElementById(`check-${f.h}`);
+                const hiddenInput = document.getElementById(`${f.h}_lama`);
+
+                if(hiddenInput) hiddenInput.value = url || '';
+                
+                if (link) {
+                    link.classList.remove('hidden'); // Ensure link element is always visible
+                    if (url && url.trim() !== '') { 
+                        link.href = url; 
+                        link.textContent = 'Lihat File';
+                        link.style.color = 'var(--primary)';
+                        link.style.cursor = 'pointer';
+                        link.onclick = null; // Clear any previous event handlers
+                        if (check) check.classList.remove('hidden');
+                    } else {
+                        link.textContent = 'File belum diunggah';
+                        link.href = '#';
+                        link.style.color = '#94a3b8';
+                        link.style.cursor = 'not-allowed';
+                        link.onclick = (e) => e.preventDefault();
+                        if (check) check.classList.add('hidden');
+                    }
+                }
+            });
+
+            // 3. Handle read-only fields from server (modified to be safer)
+            if (res.readOnly) {
+                res.readOnly.forEach(h => {
+                    const el = document.getElementById(h);
+                    // Apply only to INPUT and SELECT, never to A tags or other elements
+                    if(el && (el.tagName === 'INPUT' || el.tagName === 'SELECT')) { 
+                        el.readOnly = true; 
+                        if(el.tagName === 'SELECT') el.disabled = true; 
+                    }
+                });
+            }
+
+            // 4. Handle specific logic (Kontrak, Kontak Darurat, Kas)
+            generateContractList(data);
+
+            const kSelect = document.getElementById('Statuskontakdarurat_select');
+            const kText = document.getElementById('Statuskontakdarurat_text');
+            const sd = data['Statuskontakdarurat'];
+            const opts = Array.from(kSelect.options).map(o => o.value);
+            if(sd && !opts.includes(sd)) { 
+                kSelect.value = 'lainnya'; 
+                kText.value = sd; 
+                kText.classList.remove('hidden'); 
+            } else { 
+                kSelect.value = sd || ''; 
+            }
+
+            document.getElementById('kas-nama').value = data.Nama;
+            document.getElementById('kas-nik').value = data.NIK;
+        }
+
+        function generateContractList(data) {
+            const container = document.getElementById('contract-list-container');
+            container.innerHTML = ''; // Clear existing content
+
+            const contractKeys = Object.keys(data).filter(key => /^NoKontrak\d{2}-\d{2}$/.test(key));
+            
+            // Sort keys by year, descending
+            contractKeys.sort((a, b) => {
+                const yearA = parseInt(a.match(/(\d{2})-\d{2}$/)[1], 10);
+                const yearB = parseInt(b.match(/(\d{2})-\d{2}$/)[1], 10);
+                return yearB - yearA;
+            });
+
+            if (contractKeys.length === 0) {
+                const p = document.createElement('p');
+                p.textContent = 'Tidak ada data kontrak yang ditemukan.';
+                container.appendChild(p);
+                return;
+            }
+
+            contractKeys.forEach(noKontrakKey => {
+                const match = noKontrakKey.match(/(\d{2})-(\d{2})$/);
+                if (!match) return;
+
+                const year1 = match[1];
+                const year2 = match[2];
+                const academicYear = `20${year1}/20${year2}`;
+
+                const noKontrak = data[noKontrakKey];
+                const linkKontrakKey = `LinkKontrak${year1}-${year2}`;
+                const linkKontrak = data[linkKontrakKey];
+
+                const item = document.createElement('div');
+                item.className = 'contract-item';
+
+                let buttonHtml;
+                if (linkKontrak && linkKontrak.trim() !== '') {
+                    buttonHtml = `
+                        <a href="${linkKontrak}" target="_blank" class="btn-download">
+                            <i class="fa-solid fa-cloud-arrow-down"></i> Unduh
+                        </a>`;
+                } else {
+                    buttonHtml = `
+                        <span class="btn-disabled">
+                            <i class="fa-solid fa-hourglass-start"></i> Belum Tersedia
+                        </span>`;
+                }
+
+                item.innerHTML = `
+                    <div class="c-left">
+                        <div class="c-icon"><i class="fa-solid fa-file-invoice"></i></div>
+                        <div class="c-info">
+                            <h5>Tahun Ajaran ${academicYear}</h5>
+                            <p>Nomor: <span style="font-weight:600;">${noKontrak || 'Belum Terbit'}</span></p>
+                        </div>
+                    </div>
+                    ${buttonHtml}
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function switchTab(tab) {
+            // Update desktop tabs
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            const activeButton = document.querySelector(`.tab-btn[onclick="switchTab('${tab}')"]`);
+            if (activeButton) activeButton.classList.add('active');
+
+            // Update mobile dropdown
+            const mobileSelect = document.getElementById('mobile-tabs-select');
+            if (mobileSelect.value !== tab) {
+                mobileSelect.value = tab;
+            }
+
+            // Update content panes
+            const panes = ['pegawai', 'kontrak', 'sosial', 'report'];
+            panes.forEach(pane => {
+                const el = document.getElementById(`tab-${pane}`);
+                if (el) el.classList.add('hidden');
+            });
+            const activePane = document.getElementById(`tab-${tab}`);
+            if (activePane) activePane.classList.remove('hidden');
+        }
+
+        function checkDarurat(el) {
+            const t = document.getElementById('Statuskontakdarurat_text');
+            if(el.value === 'lainnya') t.classList.remove('hidden'); else t.classList.add('hidden');
+        }
+
+        function handleChangePin() {
+            const nik = document.getElementById('NIK').value;
+            const oldPin = document.getElementById('old-pin').value;
+            const newPin = document.getElementById('new-pin').value;
+            const confirmNewPin = document.getElementById('confirm-new-pin').value;
+
+            if (!oldPin || !newPin || !confirmNewPin) {
+                return Swal.fire('Info', 'Semua field PIN harus diisi', 'info');
+            }
+
+            if (newPin !== confirmNewPin) {
+                return Swal.fire('Error', 'PIN baru dan konfirmasi tidak cocok', 'error');
+            }
+
+            Swal.fire({title: 'Mengubah PIN...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+            google.script.run.withSuccessHandler(res => {
+                Swal.fire(res.status === 'success' ? 'Berhasil' : 'Gagal', res.message, res.status);
+                if (res.status === 'success') {
+                    document.getElementById('old-pin').value = '';
+                    document.getElementById('new-pin').value = '';
+                    document.getElementById('confirm-new-pin').value = '';
+                }
+            }).withFailureHandler(err => {
+                Swal.fire('Error', err.message, 'error');
+            }).updatePin(nik, oldPin, newPin);
+        }
+
+        function handleUpdate(e) {
+            e.preventDefault();
+            Swal.fire({title:'Menyimpan...', allowOutsideClick:false, didOpen:()=>Swal.showLoading()});
+
+            let formData = {};
+            textFields.forEach(id => { const el=document.getElementById(id); if(el) formData[id]=el.value; });
+            formData.row = document.getElementById('row-number').value;
+            formData.Statuskontakdarurat_select = document.getElementById('Statuskontakdarurat_select').value;
+            formData.Statuskontakdarurat_text = document.getElementById('Statuskontakdarurat_text').value;
+            
+            fileFields.forEach(f => formData[`${f.h}_lama`] = document.getElementById(`${f.h}_lama`).value);
+
+            const getF = (id) => {
+                const el = document.getElementById(id);
+                if(!el.files.length) return null;
+                const f = el.files[0];
+                return new Promise(res => {
+                    const r = new FileReader();
+                    r.onload=e=>res({data:e.target.result.split(',')[1], mimeType:f.type, extension:f.name.split('.').pop()});
+                    r.readAsDataURL(f);
+                });
+            };
+
+            Promise.all([getF('file-ktp'), getF('file-kk'), getF('file-foto'), getF('file-cv'), getF('file-ijazah'), getF('file-sertifikat')])
+            .then(([ktp, kk, foto, cv, ijazah, sertifikat]) => {
+                google.script.run.withSuccessHandler(res => {
+                    Swal.fire(res.status==='success'?'Berhasil':'Gagal', res.message, res.status);
+                }).updateDataPegawai(formData, {ktp, kk, foto, cv, ijazah, sertifikat});
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const yearSpan = document.getElementById('copyright-year');
+            if (yearSpan) {
+                yearSpan.textContent = new Date().getFullYear();
+            }
+            
+            const tabPegawai = document.getElementById('tab-pegawai');
+            if (tabPegawai) {
+                tabPegawai.addEventListener('click', function(event) {
+                    // Pastikan yang diklik bukan input atau select di dalam header
+                    if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT' || event.target.tagName === 'A' || event.target.isContentEditable) {
+                        return;
+                    }
+
+                    const header = event.target.closest('.accordion-header');
+                    if (header) {
+                         // Mencegah event bubbling jika ada elemen interaktif lain di header
+                        event.stopPropagation();
+                        const accordion = header.closest('.accordion-card');
+                        if (accordion) {
+                            accordion.classList.toggle('open');
+                        }
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>
