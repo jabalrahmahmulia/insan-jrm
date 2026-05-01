@@ -1,43 +1,108 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>PORTAL INSAN JRM</title>
-  <link rel="icon" href="https://jrm.sch.id/wp-content/uploads/2024/10/logo-jrm-png-150x150.png" />
-  <style>
-    /* Menghilangkan margin dan memastikan tinggi penuh */
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background-color: #eee;
-      overflow: hidden; /* Menghindari scroll pada parent */
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Insan JRM</title>
 
-    .iframe-container {
-      width: 100%;
-      height: 100dvh; /* Mengikuti tinggi layar mobile yang dinamis */
-      display: flex;
-    }
+    <meta name="description" content="Pusat layanan mandiri pegawai Yayasan Pendidikan Jabal Rahmah Mulia. Kelola data diri, akses dokumen, dan layanan kepegawaian dalam satu pintu">
+    <meta name="author" content="JRM">
 
-    iframe {
-      flex-grow: 1;
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-  </style>
+    <meta property="og:title" content="Yayasan Pendidikan Jabal Rahmah Mulia">
+    <meta property="og:description" content="Pusat layanan mandiri pegawai Yayasan Pendidikan Jabal Rahmah Mulia. Kelola data diri, akses dokumen, dan layanan kepegawaian dalam satu pintu">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://jrm.sch.id">
+    <meta property="og:image" content="https://jrm.sch.id/wp-content/uploads/2026/05/tumbnailinsa.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <style>
+        /* CSS untuk tata letak halaman */
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Styling untuk Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5%;
+            background-color: #ffffff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            height: 60px;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        .header .logo {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+        }
+
+        .header .logo img {
+            max-height: 40px;
+            display: block;
+        }
+
+        .header .btn-home {
+            background-color: #FF6600;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+
+        .header .btn-home:hover {
+            background-color: #006b36;
+        }
+
+        /* Styling untuk Iframe */
+        .content-frame {
+            flex: 1;
+            width: 100%;
+            border: none;
+        }
+
+        /* Responsivitas untuk layar kecil */
+        @media (max-width: 600px) {
+            .header {
+                padding: 10px 20px;
+                height: 50px;
+            }
+
+            .header .logo img {
+                max-height: 30px;
+            }
+
+            .header .btn-home {
+                padding: 6px 12px;
+                font-size: 12px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-  <div class="iframe-container">
-    <iframe
-      id="app"
-      src="https://script.google.com/macros/s/AKfycbwNxS7QvurWTq2hnjjPBAcJkz4hmRHejC-Ey2K7OiPYX_IhQnVc8erNVzVdQU7FNUNi/exec"
-      allowfullscreen="true"
-      allow="fullscreen; camera; microphone; display-capture; geolocation;">
+    <iframe class="content-frame"
+        src="https://script.google.com/macros/s/AKfycbwNxS7QvurWTq2hnjjPBAcJkz4hmRHejC-Ey2K7OiPYX_IhQnVc8erNVzVdQU7FNUNi/exec"
+        allow="camera; microphone; geolocation">
+        Maaf, browser Anda tidak mendukung iFrame. Silakan buka tautan langsung.
     </iframe>
-  </div>
 </body>
+
 </html>
+     
